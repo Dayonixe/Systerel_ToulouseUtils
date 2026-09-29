@@ -28,14 +28,21 @@ function doGet() {
   }
 
   const headers = values[0].map(normaliseHeader);
-  const column = (name) => headers.indexOf(name);
+  const column = (...names) => {
+    for (const name of names.map(normaliseHeader)) {
+      const index = headers.indexOf(name);
+      if (index >= 0) return index;
+    }
+    return -1;
+  };
   const offerIdColumn = column("offer_id");
-  const codeColumn = column("code");
-  const channelColumn = column("received_via");
+  const codeColumn = column("code", "Code promotionnel reçu");
   const statusColumn = column("status");
 
   if (offerIdColumn < 0 || codeColumn < 0 || statusColumn < 0) {
-    throw new Error("Colonnes requises : offer_id, code et status");
+    throw new Error(
+      "Colonnes requises : offer_id, Code promotionnel reçu (ou code) et status"
+    );
   }
 
   const codes = values.slice(1).flatMap((row) => {
@@ -45,7 +52,6 @@ function doGet() {
     return [{
       offerId: String(row[offerIdColumn] || "").trim(),
       code: String(row[codeColumn] || "").trim(),
-      receivedVia: channelColumn >= 0 ? String(row[channelColumn] || "").trim() : "",
       status: "approved",
     }];
   });

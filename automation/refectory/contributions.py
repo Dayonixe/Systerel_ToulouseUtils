@@ -42,7 +42,6 @@ class ApprovedCode:
     offer_id: str
     code: str
     confirmation_count: int = 1
-    received_via: tuple[str, ...] = ()
     approved_at: str | None = None
     last_confirmed_at: str | None = None
 
@@ -51,7 +50,6 @@ class ApprovedCode:
             "offerId": self.offer_id,
             "code": self.code,
             "confirmationCount": self.confirmation_count,
-            "receivedVia": list(self.received_via),
             "approvedAt": self.approved_at,
             "lastConfirmedAt": self.last_confirmed_at,
         }
@@ -66,16 +64,6 @@ def normalise_code(raw_code: object) -> str:
 
 def _normalise_status(raw_status: object) -> str:
     return str(raw_status or "").strip().casefold()
-
-
-def _normalise_channels(raw_channels: object) -> tuple[str, ...]:
-    if isinstance(raw_channels, str):
-        values = re.split(r"[,;]", raw_channels)
-    elif isinstance(raw_channels, list):
-        values = [str(value) for value in raw_channels]
-    else:
-        values = []
-    return tuple(sorted({value.strip()[:40] for value in values if value.strip()}))
 
 
 def _parse_record(raw_record: object) -> ApprovedCode:
@@ -95,9 +83,6 @@ def _parse_record(raw_record: object) -> ApprovedCode:
         offer_id=offer_id,
         code=normalise_code(raw_record.get("code")),
         confirmation_count=confirmation_count,
-        received_via=_normalise_channels(
-            raw_record.get("receivedVia", raw_record.get("received_via"))
-        ),
         approved_at=str(raw_record.get("approvedAt") or "") or None,
         last_confirmed_at=str(raw_record.get("lastConfirmedAt") or "") or None,
     )
@@ -189,9 +174,6 @@ def _aggregate_records(
             code=record.code,
             confirmation_count=(previous.confirmation_count if previous else 0)
             + record.confirmation_count,
-            received_via=tuple(
-                sorted(set(previous.received_via if previous else ()) | set(record.received_via))
-            ),
         )
     return aggregated
 
@@ -213,19 +195,14 @@ def _merge_records(
             previous.confirmation_count if previous else 0,
             record.confirmation_count,
         )
-        received_via = tuple(
-            sorted(set(previous.received_via if previous else ()) | set(record.received_via))
-        )
         changed = (
             previous is None
             or confirmation_count != previous.confirmation_count
-            or received_via != previous.received_via
         )
         merged[offer_id] = ApprovedCode(
             offer_id=offer_id,
             code=record.code,
             confirmation_count=confirmation_count,
-            received_via=received_via,
             approved_at=previous.approved_at if previous else timestamp,
             last_confirmed_at=timestamp if changed else previous.last_confirmed_at,
         )

@@ -55,7 +55,7 @@ Le site inclut une directive `noindex`, mais reste accessible publiquement à to
 
 ## Configurer le formulaire de contribution
 
-1. Créer un formulaire Tally avec deux champs visibles : `code` et `received_via` (SMS, e-mail ou notification).
+1. Créer un formulaire Tally avec un champ visible intitulé `Code promotionnel reçu`.
 2. Ajouter trois champs cachés nommés exactement `offer_id`, `offer_label` et `valid_until`. Le bouton du portail les préremplit automatiquement.
 3. Relier Tally à un Google Sheet nommé `Soumissions`, puis ajouter une colonne `status`. Une ligne n’est publiée que lorsque sa valeur est `approved`, `approuve` ou `valide`.
 4. Dans ce classeur, ouvrir **Extensions > Apps Script**, copier le contenu de `integrations/google-apps-script/Code.gs`, puis déployer le script comme application Web accessible à toute personne disposant du lien.
@@ -63,4 +63,4 @@ Le site inclut une directive `noindex`, mais reste accessible publiquement à to
    - `VITE_REFECTORY_FORM_URL` avec l’URL publique du formulaire Tally ;
    - `REFECTORY_CODES_FEED_URL` avec l’URL `/exec` du déploiement Apps Script.
 
-Le formulaire est ouvert à plusieurs personnes, mais aucune soumission n’atteint le site sans votre approbation dans le Sheet. Le flux Apps Script ne publie ni nom, ni e-mail, ni numéro de téléphone : uniquement l’identifiant d’offre, le code et le canal de réception.
+Le formulaire est ouvert à plusieurs personnes, mais aucune soumission n’atteint le site sans votre approbation dans le Sheet. Le flux Apps Script ne publie ni nom, ni e-mail, ni numéro de téléphone : uniquement l’identifiant d’offre et le code.

@@ -53,7 +53,6 @@ Offres de bienvenue
                 "offerId": offer_id,
                 "code": "SEMAINE2",
                 "confirmationCount": 2,
-                "receivedVia": ["SMS"],
                 "approvedAt": "2026-09-21T09:00:00+02:00",
                 "lastConfirmedAt": "2026-09-21T09:05:00+02:00",
             }
