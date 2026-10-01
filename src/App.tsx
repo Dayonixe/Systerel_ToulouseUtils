@@ -1,18 +1,26 @@
 import { useMemo } from "react";
+import { FoodTruckSection } from "./components/FoodTruckSection";
 import { OfferSkeleton } from "./components/OfferSkeleton";
-import { ExternalIcon, RefreshIcon, TagIcon } from "./components/Icons";
+import { ExternalIcon, RefreshIcon, TagIcon, TruckIcon } from "./components/Icons";
 import { PromoCard } from "./components/PromoCard";
+import { parisWeekday, resolveFoodTruckStops } from "./domain/foodTrucks";
 import { activeOffers, formatSyncLabel } from "./domain/offers";
+import { useFoodTruckData } from "./hooks/useFoodTruckData";
 import { usePromotionData } from "./hooks/usePromotionData";
 
 const REFECTORY_OFFERS_URL = "https://www.refectory.fr/conditions-des-offres-en-cours";
 const CONTRIBUTION_FORM_URL = import.meta.env.VITE_REFECTORY_FORM_URL?.trim() ?? "";
 
 function App() {
+  const foodTrucks = useFoodTruckData();
   const { status, data, error, reload } = usePromotionData();
   const offers = useMemo(() => (data ? activeOffers(data.feed) : []), [data]);
   const codeCount = offers.filter((offer) => Boolean(offer.code)).length;
-  const waitingCount = offers.length - codeCount;
+  const currentDay = parisWeekday();
+  const todayFoodTrucks = useMemo(
+    () => foodTrucks.data ? resolveFoodTruckStops(foodTrucks.data, currentDay) : [],
+    [currentDay, foodTrucks.data],
+  );
   const today = new Intl.DateTimeFormat("fr-FR", {
     weekday: "long",
     day: "numeric",
@@ -31,6 +39,10 @@ function App() {
             <small>Toulouse · Collaborateurs</small>
           </span>
         </a>
+        <nav className="site-nav" aria-label="Navigation principale">
+          <a href="#food-trucks">Food trucks</a>
+          <a href="#offers">Offres</a>
+        </nav>
         <a className="source-link source-link--desktop" href={REFECTORY_OFFERS_URL} target="_blank" rel="noreferrer">
           Source officielle <ExternalIcon />
         </a>
@@ -40,21 +52,36 @@ function App() {
         <section className="intro" aria-labelledby="page-title">
           <div className="intro__copy">
             <p className="intro__date">{today}</p>
-            <h1 id="page-title">Les bons plans du jour, sans détour.</h1>
+            <h1 id="page-title">Votre pause déjeuner, sans détour.</h1>
             <p className="intro__lead">
-              Les offres Refectory valables à Toulouse, leurs codes partagés et prêts à copier.
+              Les food trucks autour du bureau et les offres Refectory du jour, réunis au même endroit.
             </p>
           </div>
 
-          <div className="intro__ticket" aria-hidden="true">
-            <div className="intro__ticket-icon"><TagIcon /></div>
-            <span>Pause déjeuner</span>
-            <strong>{status === "ready" ? `${codeCount} code${codeCount === 1 ? "" : "s"}` : "—"}</strong>
-            <small>{waitingCount > 0 ? `${waitingCount} offre${waitingCount === 1 ? "" : "s"} à compléter` : `actif${codeCount === 1 ? "" : "s"} aujourd’hui`}</small>
+          <div className="intro__ticket">
+            <div className="intro__metrics">
+              <div>
+                <span className="intro__ticket-icon"><TruckIcon /></span>
+                <span>Food trucks</span>
+                <strong>{foodTrucks.status === "ready" ? todayFoodTrucks.length : "—"}</strong>
+              </div>
+              <div>
+                <span className="intro__ticket-icon"><TagIcon /></span>
+                <span>Codes promo</span>
+                <strong>{status === "ready" ? codeCount : "—"}</strong>
+              </div>
+            </div>
+            <small>
+              {foodTrucks.status === "ready" && todayFoodTrucks.length > 0
+                ? todayFoodTrucks.map(({ truck }) => truck.name).join(" · ")
+                : "Planning en cours de chargement"}
+            </small>
           </div>
         </section>
 
-        <section className="offers-section" aria-labelledby="offers-title">
+        <FoodTruckSection state={foodTrucks} today={currentDay} />
+
+        <section id="offers" className="offers-section" aria-labelledby="offers-title">
           <div className="section-heading">
             <div>
               <p className="section-heading__kicker">Refectory</p>

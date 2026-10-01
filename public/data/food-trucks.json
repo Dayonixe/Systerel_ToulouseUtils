@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "sourceUrl": "https://docs.google.com/spreadsheets/d/1qngBgMI9cA2i5eS8PmHONJ-_WsnYEphq10VGFQS4HIs/edit?gid=0#gid=0",
+  "updatedAt": "2026-10-01",
+  "locations": [
+    {
+      "id": "mipih",
+      "name": "Parking MIPIH",
+      "mapUrl": "https://maps.app.goo.gl/CdzsgPzUwk8P7syX9",
+      "accent": "#49a9ff"
+    },
+    {
+      "id": "gls",
+      "name": "Parking GLS",
+      "mapUrl": "https://maps.app.goo.gl/daxNNF4CXmkqaCsA9",
+      "accent": "#5bd7a3"
+    },
+    {
+      "id": "master-film",
+      "name": "Parking Master Film Communication",
+      "mapUrl": "https://maps.app.goo.gl/XqESnzvT61ccz5ea6",
+      "accent": "#b18cff"
+    },
+    {
+      "id": "park-avenue",
+      "name": "Parking Park Avenue",
+      "mapUrl": "https://maps.app.goo.gl/UfbaFYBmJTvhAYhS9",
+      "accent": "#f1b35c"
+    },
+    {
+      "id": "casino",
+      "name": "Casino",
+      "mapUrl": null,
+      "accent": "#ff7e67"
+    },
+    {
+      "id": "la-taable",
+      "name": "Devant « La Taable »",
+      "mapUrl": "https://www.google.fr/maps/place/Cr%C3%AAperie+Doc+Krampouz/@43.5674984,1.3830015,21z/data=!4m6!3m5!1s0x12aeba15ce75b71f:0x2e7bb0e0bfc8f530!8m2!3d43.5674434!4d1.3833402!16s%2Fg%2F11cn2m2zd4?entry=ttu&g_ep=EgoyMDI0MTAyMy4wIKXMDSoASAFQAw%3D%3D",
+      "accent": "#d58b42"
+    },
+    {
+      "id": "metrhotel",
+      "name": "Devant Metrhôtel · face au Buffalo Grill",
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=4+Impasse+Michel+Labrousse+31100+Toulouse",
+      "accent": "#ff6f91"
+    }
+  ],
+  "foodTrucks": [
+    { "id": "le-monde-en-croc", "name": "Le monde en croc", "cuisine": "Plats du jour style bistrot", "website": null, "phone": null, "note": null, "image": "bagel-sandwich.jpg" },
+    { "id": "nikineko", "name": "Nikineko", "cuisine": "Japonais", "website": null, "phone": null, "note": null, "image": "asian-bowl.jpg" },
+    { "id": "lepicurieux", "name": "L’Epicurieux", "cuisine": "Bagel", "website": null, "phone": null, "note": null, "image": "bagel-sandwich.jpg" },
+    { "id": "food-truck-coreen", "name": "Food truck coréen", "cuisine": "Coréen", "website": null, "phone": null, "note": "Nom non renseigné dans le planning", "image": "asian-bowl.jpg" },
+    { "id": "comptoir-rosemonde", "name": "Le comptoir de Rosemonde", "cuisine": "Afrique de l’Ouest", "website": "https://lecomptoirederosemonde.com", "phone": "06 17 86 25 13", "note": null, "image": "world-bowl.jpg" },
+    { "id": "ban-thai", "name": "Ban Thai", "cuisine": "Thaï", "website": null, "phone": null, "note": null, "image": "asian-bowl.jpg" },
+    { "id": "les-canailles", "name": "Les canailles", "cuisine": "Grillades", "website": null, "phone": null, "note": null, "image": "burger-grill.jpg" },
+    { "id": "kumquat", "name": "Kumquat", "cuisine": "Vietnamien", "website": null, "phone": null, "note": null, "image": "asian-bowl.jpg" },
+    { "id": "tommys-burger", "name": "Tommy’s Burger", "cuisine": null, "website": null, "phone": null, "note": null, "image": "burger-grill.jpg" },
+    { "id": "class-croute", "name": "Class’ Croûte", "cuisine": null, "website": null, "phone": null, "note": null, "image": "bagel-sandwich.jpg" },
+    { "id": "moya", "name": "Moya", "cuisine": "Mexicain", "website": null, "phone": null, "note": null, "image": "world-bowl.jpg" },
+    { "id": "spice-box", "name": "Spice box", "cuisine": "Indien", "website": null, "phone": null, "note": null, "image": "world-bowl.jpg" },
+    { "id": "sopiadin", "name": "So Piad’In", "cuisine": "Italien · crêpe · wrap", "website": "https://www.sopiadin.fr", "phone": "07 66 60 48 71", "note": null, "image": "crepe-galette.jpg" },
+    { "id": "grill-truck", "name": "Grill Truck", "cuisine": "Viande", "website": "https://legrilltruck.com/", "phone": null, "note": null, "image": "burger-grill.jpg" },
+    { "id": "passion-crepes", "name": "Passion Crêpes", "cuisine": null, "website": null, "phone": null, "note": null, "image": "crepe-galette.jpg" },
+    { "id": "laddilafe", "name": "LadDiLaFe", "cuisine": "Réunionnais", "website": null, "phone": null, "note": null, "image": "world-bowl.jpg" },
+    { "id": "galette-trotteuse", "name": "La Galette Trotteuse", "cuisine": "Galettes bretonnes", "website": null, "phone": null, "note": null, "image": "crepe-galette.jpg" },
+    { "id": "mr-fishy", "name": "Mr Fishy", "cuisine": "Fish & chips", "website": null, "phone": null, "note": null, "image": "fish-chips.jpg" },
+    { "id": "tartine-lulu", "name": "Tartine & Lulu", "cuisine": "Burger", "website": null, "phone": null, "note": null, "image": "burger-grill.jpg" },
+    { "id": "o-tuk-tuk", "name": "Ô Tuk Tuk", "cuisine": "Thaï & lao", "website": null, "phone": null, "note": null, "image": "asian-bowl.jpg" },
+    { "id": "chez-marcel", "name": "Chez Marcel", "cuisine": "Burger & crêpe", "website": null, "phone": null, "note": null, "image": "burger-grill.jpg" },
+    { "id": "stand-pizza-casino", "name": "Stand Pizza Casino", "cuisine": "Pizza", "website": null, "phone": "05 61 40 63 72", "note": null, "image": "pizza.jpg" },
+    { "id": "creperie", "name": "Crêperie", "cuisine": "Crêpes", "website": null, "phone": null, "note": null, "image": "crepe-galette.jpg" },
+    { "id": "bibim-pop", "name": "BIBIM POP", "cuisine": "Distributeur de plats coréens", "website": "https://www.bibimpop.fr/", "phone": "06 15 32 62 52", "note": "Accessible 24 h/24 et 7 j/7", "image": "asian-bowl.jpg" }
+  ],
+  "stops": [
+    { "truckId": "le-monde-en-croc", "locationId": "mipih", "days": ["monday"] },
+    { "truckId": "nikineko", "locationId": "mipih", "days": ["tuesday"] },
+    { "truckId": "lepicurieux", "locationId": "mipih", "days": ["wednesday"] },
+    { "truckId": "food-truck-coreen", "locationId": "mipih", "days": ["thursday"] },
+    { "truckId": "comptoir-rosemonde", "locationId": "mipih", "days": ["friday"] },
+
+    { "truckId": "ban-thai", "locationId": "gls", "days": ["monday"] },
+    { "truckId": "les-canailles", "locationId": "gls", "days": ["monday"] },
+    { "truckId": "kumquat", "locationId": "gls", "days": ["tuesday"] },
+    { "truckId": "tommys-burger", "locationId": "gls", "days": ["tuesday"] },
+    { "truckId": "class-croute", "locationId": "gls", "days": ["tuesday", "wednesday", "friday"] },
+    { "truckId": "moya", "locationId": "gls", "days": ["wednesday"] },
+    { "truckId": "spice-box", "locationId": "gls", "days": ["wednesday"] },
+    { "truckId": "sopiadin", "locationId": "gls", "days": ["thursday"] },
+    { "truckId": "grill-truck", "locationId": "gls", "days": ["thursday"] },
+    { "truckId": "passion-crepes", "locationId": "gls", "days": ["friday"] },
+
+    { "truckId": "laddilafe", "locationId": "master-film", "days": ["tuesday"] },
+    { "truckId": "galette-trotteuse", "locationId": "master-film", "days": ["wednesday"] },
+    { "truckId": "lepicurieux", "locationId": "master-film", "days": ["thursday"] },
+    { "truckId": "mr-fishy", "locationId": "master-film", "days": ["friday"] },
+
+    { "truckId": "spice-box", "locationId": "park-avenue", "days": ["monday"] },
+    { "truckId": "tartine-lulu", "locationId": "park-avenue", "days": ["tuesday"] },
+    { "truckId": "o-tuk-tuk", "locationId": "park-avenue", "days": ["wednesday"] },
+    { "truckId": "chez-marcel", "locationId": "park-avenue", "days": ["friday"] },
+
+    { "truckId": "stand-pizza-casino", "locationId": "casino", "days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] },
+    { "truckId": "creperie", "locationId": "la-taable", "days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] },
+    { "truckId": "bibim-pop", "locationId": "metrhotel", "days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] }
+  ]
+}

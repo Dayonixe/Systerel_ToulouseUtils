@@ -1,6 +1,6 @@
 :root {
-  color: #f4f7fb;
-  background: #060a10;
+  color: var(--ink);
+  background: var(--page-base);
   font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -21,6 +21,34 @@
   --green-soft: rgba(91, 215, 163, 0.12);
   --amber: #f1b35c;
   --shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+  --page-base: #060a10;
+  --page-background:
+    radial-gradient(circle at 86% -8%, rgba(1, 68, 137, 0.46), transparent 34rem),
+    radial-gradient(circle at 3% 66%, rgba(18, 86, 145, 0.18), transparent 31rem),
+    linear-gradient(180deg, #080d14 0%, #060a10 58%, #070c12 100%);
+  --grid-color: rgba(118, 159, 199, 0.026);
+  --chrome-background: rgba(11, 20, 30, 0.72);
+  --card-background:
+    radial-gradient(circle at 90% 0, color-mix(in srgb, var(--location-accent) 20%, transparent), transparent 12rem),
+    linear-gradient(155deg, rgba(17, 29, 43, 0.97), rgba(9, 17, 26, 0.98));
+  --card-shadow: 0 18px 48px rgba(0, 0, 0, 0.25);
+  --truck-corner-glow:
+    radial-gradient(
+      circle at calc(100% - 27px) 50%,
+      color-mix(in srgb, var(--location-accent) 34%, transparent) 0,
+      color-mix(in srgb, var(--location-accent) 15%, transparent) 32px,
+      transparent 78px
+    );
+  --media-shade: linear-gradient(to top, rgba(3, 8, 14, 0.4), transparent 54%);
+  --promo-background: linear-gradient(155deg, rgba(18, 31, 46, 0.97), rgba(10, 18, 28, 0.98));
+  --code-background: rgba(2, 11, 21, 0.58);
+  --code-hover-background: rgba(1, 68, 137, 0.15);
+  --contribution-background: rgba(43, 29, 10, 0.2);
+  --state-background: linear-gradient(145deg, rgba(18, 31, 46, 0.94), rgba(8, 15, 24, 0.92));
+  --state-inset: inset 0 1px rgba(255, 255, 255, 0.025);
+  --state-icon-background: rgba(1, 68, 137, 0.3);
+  --note-background: rgba(14, 24, 36, 0.62);
+  --skeleton-background: linear-gradient(90deg, #111d2b 20%, #1a2b3e 50%, #111d2b 80%);
 }
 
 * { box-sizing: border-box; }
@@ -32,10 +60,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 86% -8%, rgba(1, 68, 137, 0.46), transparent 34rem),
-    radial-gradient(circle at 3% 66%, rgba(18, 86, 145, 0.18), transparent 31rem),
-    linear-gradient(180deg, #080d14 0%, #060a10 58%, #070c12 100%);
+  background: var(--page-background);
 }
 
 body::before {
@@ -44,8 +69,8 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(118, 159, 199, 0.026) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(118, 159, 199, 0.026) 1px, transparent 1px);
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
   background-size: 42px 42px;
   mask-image: linear-gradient(to bottom, black, transparent 72%);
 }
@@ -71,9 +96,10 @@ summary:focus-visible {
 }
 
 .site-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 24px;
   min-height: 104px;
   border-bottom: 1px solid var(--line);
 }
@@ -103,6 +129,31 @@ summary:focus-visible {
 .brand strong { font-size: 1rem; letter-spacing: -0.02em; }
 .brand small { color: var(--muted); font-size: 0.72rem; letter-spacing: 0.03em; }
 
+.site-nav {
+  display: flex;
+  justify-self: center;
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--chrome-background);
+}
+
+.site-nav a {
+  padding: 9px 14px;
+  color: var(--muted-strong);
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.site-nav a:hover {
+  color: #fff;
+  background: rgba(1, 68, 137, 0.42);
+}
+
 .source-link {
   display: inline-flex;
   align-items: center;
@@ -120,8 +171,8 @@ summary:focus-visible {
 
 .intro {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 64px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 52px;
   align-items: center;
   padding: 82px 0 72px;
 }
@@ -162,7 +213,7 @@ summary:focus-visible {
 .intro__ticket {
   position: relative;
   min-height: 282px;
-  padding: 34px;
+  padding: 26px;
   overflow: hidden;
   color: #fff;
   border: 1px solid rgba(148, 207, 255, 0.22);
@@ -190,21 +241,222 @@ summary:focus-visible {
   border-radius: 50%;
 }
 
+.intro__metrics {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.intro__metrics > div {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  min-height: 148px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px 18px 18px 5px;
+  background: rgba(0, 34, 70, 0.26);
+}
+
 .intro__ticket-icon {
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
-  margin-bottom: 38px;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 18px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.12);
 }
 
-.intro__ticket-icon svg { width: 23px; }
-.intro__ticket > span { display: block; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-.intro__ticket strong { display: block; margin: 8px 0 1px; font-family: Georgia, "Times New Roman", serif; font-size: 3.35rem; font-weight: 500; letter-spacing: -0.06em; }
-.intro__ticket small { color: #fff; font-size: 0.88rem; }
+.intro__ticket-icon svg { width: 18px; }
+.intro__metrics > div > span:not(.intro__ticket-icon) { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
+.intro__metrics strong { display: block; margin-top: 5px; font-family: Georgia, "Times New Roman", serif; font-size: 2.75rem; font-weight: 500; line-height: 1; letter-spacing: -0.06em; }
+.intro__ticket > small { position: relative; z-index: 1; display: block; margin-top: 17px; color: rgba(255, 255, 255, 0.88); font-size: 0.76rem; line-height: 1.55; }
+
+#food-trucks,
+#offers { scroll-margin-top: 24px; }
+
+.food-trucks-section {
+  padding: 55px 0 70px;
+  border-top: 1px solid var(--line);
+}
+
+.section-heading--food-trucks { margin-bottom: 25px; }
+
+.food-truck-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 25px;
+  padding: 14px 16px 14px 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--chrome-background);
+}
+
+.food-truck-toolbar > div:first-child {
+  display: grid;
+  gap: 3px;
+  flex: none;
+}
+
+.food-truck-toolbar strong { font-size: 0.88rem; }
+.food-truck-toolbar > div:first-child span { color: var(--muted); font-size: 0.72rem; }
+
+.day-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.day-filter button {
+  min-width: 44px;
+  padding: 8px 11px;
+  color: var(--muted-strong);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 0.73rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.day-filter button:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+  background: rgba(1, 68, 137, 0.14);
+}
+
+.day-filter button.is-active {
+  color: #fff;
+  border-color: rgba(117, 188, 249, 0.32);
+  background: var(--blue);
+  box-shadow: 0 8px 22px rgba(0, 48, 99, 0.3);
+}
+
+.food-truck-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.food-truck-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 148px 1fr auto;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 22px 22px 22px 7px;
+  background: var(--card-background);
+  box-shadow: var(--card-shadow);
+  animation: card-in 430ms both;
+  animation-delay: calc(var(--card-index, 0) * 45ms);
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.food-truck-card::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--location-accent);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--location-accent) 32%, transparent);
+}
+
+.food-truck-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+}
+
+.food-truck-card__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 19px;
+  color: var(--muted-strong);
+  border-bottom: 1px solid var(--line);
+  background: var(--truck-corner-glow);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.food-truck-card__topline svg { width: 19px; height: 19px; color: var(--location-accent); }
+
+.food-truck-card__media {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-raised);
+}
+
+.food-truck-card__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--media-shade);
+  pointer-events: none;
+}
+
+.food-truck-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.88) contrast(1.04);
+  transition: transform 360ms ease, filter 360ms ease;
+}
+
+.food-truck-card:hover .food-truck-card__media img {
+  transform: scale(1.035);
+  filter: saturate(1) contrast(1.04);
+}
+
+.food-truck-card__body { padding: 24px 22px 26px; }
+.food-truck-card__body p { margin: 0 0 7px; color: var(--location-accent); font-size: 0.72rem; font-weight: 800; }
+.food-truck-card__body h3 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.55rem, 2.7vw, 2.25rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.045em; }
+.food-truck-card__body small { display: block; margin-top: 9px; color: var(--muted); font-size: 0.7rem; }
+
+.food-truck-card__footer {
+  display: grid;
+  gap: 12px;
+  padding: 16px 19px 17px;
+  border-top: 1px solid var(--line);
+  color: var(--muted-strong);
+  font-size: 0.72rem;
+}
+
+.food-truck-card__footer > a,
+.food-truck-card__footer > span,
+.food-truck-card__footer > div a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.food-truck-card__footer > a,
+.food-truck-card__footer > div a {
+  width: fit-content;
+  color: color-mix(in srgb, var(--location-accent) 72%, white);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.food-truck-card__footer a:hover { color: #fff; }
+.food-truck-card__footer svg { flex: none; width: 15px; height: 15px; }
+.food-truck-card__footer > div { display: flex; flex-wrap: wrap; gap: 15px; }
+
+.food-truck-card--skeleton { display: block; min-height: 230px; padding: 24px; }
+.skeleton--food-truck-title { width: 72%; height: 35px; margin-top: 37px; }
+.state-panel--compact { padding-block: 46px; }
 
 .offers-section {
   padding: 55px 0 70px;
@@ -254,7 +506,7 @@ summary:focus-visible {
   min-width: 0;
   border: 1px solid var(--line);
   border-radius: 26px 26px 26px 8px;
-  background: linear-gradient(155deg, rgba(18, 31, 46, 0.97), rgba(10, 18, 28, 0.98));
+  background: var(--promo-background);
   box-shadow: var(--shadow);
   animation: card-in 430ms both;
   animation-delay: calc(var(--card-index, 0) * 70ms);
@@ -301,12 +553,12 @@ summary:focus-visible {
   text-align: left;
   border: 1px dashed rgba(120, 180, 234, 0.42);
   border-radius: 15px;
-  background: rgba(2, 11, 21, 0.58);
+  background: var(--code-background);
   cursor: pointer;
   transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
 }
 
-.code-button:hover { transform: translateY(-2px); border-color: var(--blue-bright); background: rgba(1, 68, 137, 0.15); }
+.code-button:hover { transform: translateY(-2px); border-color: var(--blue-bright); background: var(--code-hover-background); }
 .code-button--copied { color: var(--green); border-color: var(--green); background: var(--green-soft); }
 .code-button span { display: grid; gap: 4px; min-width: 0; }
 .code-button small { color: var(--muted); font-size: 0.66rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
@@ -325,7 +577,7 @@ summary:focus-visible {
   padding: 18px 19px;
   border: 1px dashed rgba(241, 179, 92, 0.38);
   border-radius: 15px;
-  background: rgba(43, 29, 10, 0.2);
+  background: var(--contribution-background);
 }
 
 .contribution-callout > div { display: grid; gap: 5px; }
@@ -365,9 +617,8 @@ summary:focus-visible {
   text-align: center;
   border: 1px solid var(--line);
   border-radius: 28px 28px 28px 8px;
-  background:
-    linear-gradient(145deg, rgba(18, 31, 46, 0.94), rgba(8, 15, 24, 0.92));
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.025), var(--shadow);
+  background: var(--state-background);
+  box-shadow: var(--state-inset), var(--shadow);
 }
 
 .state-panel__icon {
@@ -378,7 +629,7 @@ summary:focus-visible {
   color: var(--blue-pale);
   border: 1px solid rgba(91, 163, 228, 0.22);
   border-radius: 18px 18px 18px 5px;
-  background: rgba(1, 68, 137, 0.3);
+  background: var(--state-icon-background);
 }
 
 .state-panel__icon svg { width: 24px; }
@@ -417,7 +668,7 @@ summary:focus-visible {
   color: var(--muted);
   border: 1px solid var(--line);
   border-radius: 16px;
-  background: rgba(14, 24, 36, 0.62);
+  background: var(--note-background);
 }
 .trust-note > span { display: grid; flex: none; place-items: center; width: 21px; height: 21px; color: white; border-radius: 50%; background: var(--blue); font-family: Georgia, serif; font-size: 0.75rem; font-weight: 700; }
 .trust-note p { margin: 1px 0 0; font-size: 0.78rem; line-height: 1.55; }
@@ -433,11 +684,75 @@ footer {
 }
 
 .promo-card--skeleton { min-height: 352px; padding: 32px; }
-.skeleton { display: block; border-radius: 10px; background: linear-gradient(90deg, #111d2b 20%, #1a2b3e 50%, #111d2b 80%); background-size: 240% 100%; animation: shimmer 1.35s infinite linear; }
+.skeleton { display: block; border-radius: 10px; background: var(--skeleton-background); background-size: 240% 100%; animation: shimmer 1.35s infinite linear; }
 .skeleton--short { width: 105px; height: 12px; }
 .skeleton--title { width: 50%; height: 52px; margin-top: 30px; }
 .skeleton--line { width: 42%; height: 12px; margin-top: 13px; }
 .skeleton--button { width: 100%; height: 64px; margin-top: 31px; }
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: var(--ink);
+    background: var(--page-base);
+    color-scheme: light;
+    --ink: #172235;
+    --muted: #657389;
+    --muted-strong: #3e4c61;
+    --surface: #ffffff;
+    --surface-raised: #edf3f9;
+    --surface-soft: #f5f8fb;
+    --blue-bright: #0064b4;
+    --blue-pale: #014489;
+    --line: rgba(28, 72, 110, 0.15);
+    --line-strong: rgba(1, 68, 137, 0.38);
+    --green: #087957;
+    --green-soft: rgba(8, 121, 87, 0.1);
+    --amber: #976000;
+    --shadow: 0 24px 65px rgba(31, 61, 91, 0.13);
+    --page-base: #f4f7fb;
+    --page-background:
+      radial-gradient(circle at 86% -8%, rgba(1, 68, 137, 0.15), transparent 34rem),
+      radial-gradient(circle at 3% 66%, rgba(45, 130, 195, 0.08), transparent 31rem),
+      linear-gradient(180deg, #f9fbfd 0%, #f3f7fb 58%, #f7f9fc 100%);
+    --grid-color: rgba(1, 68, 137, 0.04);
+    --chrome-background: rgba(255, 255, 255, 0.8);
+    --card-background:
+      radial-gradient(circle at 90% 0, color-mix(in srgb, var(--location-accent) 12%, transparent), transparent 12rem),
+      linear-gradient(155deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 253, 0.98));
+    --card-shadow: 0 16px 42px rgba(32, 61, 89, 0.1);
+    --truck-corner-glow:
+      radial-gradient(
+        circle at calc(100% - 27px) 50%,
+        color-mix(in srgb, var(--location-accent) 25%, transparent) 0,
+        color-mix(in srgb, var(--location-accent) 11%, transparent) 32px,
+        transparent 78px
+      );
+    --media-shade: linear-gradient(to top, rgba(8, 20, 32, 0.16), transparent 54%);
+    --promo-background: linear-gradient(155deg, rgba(255, 255, 255, 0.99), rgba(244, 248, 252, 0.98));
+    --code-background: rgba(238, 244, 250, 0.9);
+    --code-hover-background: rgba(1, 68, 137, 0.08);
+    --contribution-background: rgba(255, 247, 231, 0.72);
+    --state-background: linear-gradient(145deg, rgba(255, 255, 255, 0.99), rgba(244, 248, 252, 0.98));
+    --state-inset: inset 0 1px rgba(255, 255, 255, 0.95);
+    --state-icon-background: rgba(1, 68, 137, 0.09);
+    --note-background: rgba(255, 255, 255, 0.78);
+    --skeleton-background: linear-gradient(90deg, #e8eef5 20%, #dbe6f0 50%, #e8eef5 80%);
+  }
+
+  .site-nav a:hover {
+    color: var(--blue);
+    background: rgba(1, 68, 137, 0.09);
+  }
+
+  .food-truck-card__body p,
+  .food-truck-card__topline svg,
+  .food-truck-card__footer > a,
+  .food-truck-card__footer > div a {
+    color: color-mix(in srgb, var(--location-accent) 62%, #142235);
+  }
+
+  .food-truck-card__footer a:hover { color: var(--blue-deep); }
+}
 
 @keyframes card-in {
   from { opacity: 0; transform: translateY(12px); }
@@ -450,16 +765,23 @@ footer {
 
 @media (max-width: 800px) {
   .app-shell { width: min(100% - 32px, 680px); }
-  .site-header { min-height: 86px; }
+  .site-header { grid-template-columns: 1fr auto; gap: 14px; min-height: 0; padding: 18px 0 14px; }
+  .site-nav { grid-column: 1 / -1; grid-row: 2; justify-self: stretch; }
+  .site-nav a { flex: 1; text-align: center; }
   .source-link--desktop { display: none; }
   .source-link--mobile { display: inline-flex; }
   .intro { grid-template-columns: 1fr; gap: 32px; padding: 60px 0 52px; }
   .intro h1 { font-size: clamp(3.1rem, 14vw, 5.2rem); }
-  .intro__ticket { display: grid; grid-template-columns: auto 1fr; column-gap: 17px; align-items: center; min-height: 0; padding: 24px; }
-  .intro__ticket-icon { grid-row: 1 / 4; margin: 0; }
-  .intro__ticket strong { margin: 2px 0; font-size: 2.1rem; }
+  .intro__ticket { min-height: 0; padding: 20px; }
+  .intro__metrics > div { min-height: 126px; }
+  .intro__ticket-icon { margin-bottom: 12px; }
+  .intro__metrics strong { font-size: 2.35rem; }
+  .food-trucks-section,
   .offers-section { padding-top: 43px; }
   .section-heading { align-items: flex-start; flex-direction: column; gap: 14px; }
+  .food-truck-toolbar { align-items: flex-start; flex-direction: column; }
+  .day-filter { justify-content: flex-start; }
+  .food-truck-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .offers-grid { grid-template-columns: 1fr; }
   footer { gap: 24px; }
 }
@@ -471,6 +793,13 @@ footer {
   .intro h1 { font-size: 3.2rem; }
   .intro__lead { margin-top: 23px; }
   .intro__ticket { border-radius: 22px 22px 22px 7px; }
+  .intro__metrics > div { padding: 14px; }
+  .intro__metrics > div > span:not(.intro__ticket-icon) { font-size: 0.62rem; }
+  .food-truck-toolbar { padding: 15px; }
+  .day-filter { display: grid; grid-template-columns: repeat(4, 1fr); width: 100%; }
+  .day-filter button { min-width: 0; }
+  .food-truck-grid { grid-template-columns: 1fr; }
+  .food-truck-card { grid-template-rows: auto 165px 1fr auto; }
   .promo-card__body { padding: 25px 22px 23px; }
   .promo-card__topline { padding-inline: 21px; }
   .promo-card__scope { text-align: right; }

@@ -1,10 +1,11 @@
 # Le Hub Toulouse
 
-Portail public destiné aux collaborateurs du site de Toulouse. Cette première version affiche les offres promotionnelles Refectory valables à Toulouse et permet aux collaborateurs de partager le code commun reçu par e-mail, SMS ou notification.
+Portail public destiné aux collaborateurs du site de Toulouse. Il affiche les food trucks présents autour du bureau, les offres promotionnelles Refectory valables à Toulouse et permet aux collaborateurs de partager le code commun reçu par e-mail, SMS ou notification.
 
 ## Fonctionnement
 
 - L’interface React lit des fichiers JSON statiques dans `public/data`.
+- Le planning hebdomadaire des food trucks est conservé dans `public/data/food-trucks.json`. La page affiche le jour courant par défaut et permet de consulter les autres jours ou tous les passages.
 - Le collecteur Python ouvre la page publique Refectory avec Playwright.
 - Les offres sont normalisées, filtrées pour Toulouse puis publiées avec le site, même lorsque leur code est encore inconnu.
 - Un identifiant stable rattache le code partagé à toute la période de validité de l’offre : le code n’est donc pas réinitialisé chaque jour.
@@ -52,6 +53,12 @@ Dans les paramètres GitHub Pages, sélectionner **GitHub Actions** comme source
 - `sync-contributed-codes.yml` vérifie les nouvelles contributions approuvées toutes les 15 minutes, du lundi au vendredi entre 8 h et 18 h.
 
 Le site inclut une directive `noindex`, mais reste accessible publiquement à toute personne connaissant son URL.
+
+## Mettre à jour les food trucks
+
+Le fichier `public/data/food-trucks.json` reprend le planning du Google Sheet de référence. Les enseignes, emplacements et passages sont séparés afin qu’un même food truck puisse être présent plusieurs jours ou sur plusieurs parkings sans dupliquer ses coordonnées.
+
+Après une modification, lancer `npm test`, `npm run build` et `python -m pytest automation/tests` pour vérifier les références, les jours et le rendu du portail.
 
 ## Configurer le formulaire de contribution
 

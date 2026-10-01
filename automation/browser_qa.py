@@ -24,9 +24,53 @@ def _assert_page_shape(page: Page) -> None:
     assert page.locator("main").count() == 1
     assert page.locator("footer").count() == 1
     assert page.locator("h1").count() == 1
+    assert page.locator("#food-trucks-title").count() == 1
     assert page.locator("#offers-title").count() == 1
+    assert page.get_by_role("link", name="Food trucks", exact=True).get_attribute("href") == "#food-trucks"
+    assert page.get_by_role("link", name="Offres", exact=True).get_attribute("href") == "#offers"
     has_overflow = page.evaluate("document.documentElement.scrollWidth > window.innerWidth")
     assert not has_overflow, "La page déborde horizontalement"
+
+
+def _assert_food_truck_filters(page: Page) -> None:
+    today_button = page.get_by_role("button", name="Aujourd’hui", exact=True)
+    today_button.wait_for()
+    assert today_button.get_attribute("aria-pressed") == "true"
+    page.locator(".food-truck-card").first.wait_for()
+    today_count = page.locator(".food-truck-card").count()
+    assert today_count > 0
+    assert page.get_by_role("heading", name="BIBIM POP", exact=True).count() == 1
+    assert page.get_by_text("Visuel d’illustration", exact=True).count() == 0
+
+    creperie_card = page.locator(".food-truck-card").filter(
+        has=page.get_by_role("heading", name="Crêperie", exact=True)
+    )
+    creperie_map = creperie_card.locator("a", has_text="Devant « La Taable »")
+    assert creperie_map.count() == 1
+    assert creperie_map.get_attribute("href").startswith(
+        "https://www.google.fr/maps/place/Cr%C3%AAperie+Doc+Krampouz/"
+    )
+
+    images = page.locator(".food-truck-card__media img")
+    assert images.count() == today_count
+    for index in range(images.count()):
+        image = images.nth(index)
+        image.scroll_into_view_if_needed()
+        image.evaluate("element => element.decode()")
+        assert image.evaluate("element => element.naturalWidth > 0")
+
+    all_button = page.get_by_role("button", name="Tous", exact=True)
+    all_button.click()
+    assert all_button.get_attribute("aria-pressed") == "true"
+    assert page.locator(".food-truck-card").count() > today_count
+
+    today_button.click()
+    assert today_button.get_attribute("aria-pressed") == "true"
+
+    page.get_by_role("link", name="Food trucks", exact=True).click()
+    assert page.evaluate("location.hash") == "#food-trucks"
+    page.get_by_role("link", name="Offres", exact=True).click()
+    assert page.evaluate("location.hash") == "#offers"
 
 
 def _assert_pwa(page: Page, base_url: str) -> None:
@@ -130,8 +174,18 @@ def _assert_accessibility(page: Page, state: str) -> None:
     assert not violations, f"Violations WCAG dans l’état {state} : {violations}"
 
 
-def _capture_empty_state(browser: Browser, base_url: str, width: int, height: int) -> None:
-    page = browser.new_page(viewport={"width": width, "height": height}, locale="fr-FR")
+def _capture_empty_state(
+    browser: Browser,
+    base_url: str,
+    width: int,
+    height: int,
+    color_scheme: str,
+) -> None:
+    page = browser.new_page(
+        viewport={"width": width, "height": height},
+        locale="fr-FR",
+        color_scheme=color_scheme,
+    )
     source_url = "https://www.refectory.fr/conditions-des-offres-en-cours"
     empty_feed = {"schemaVersion": 1, "sourceUrl": source_url, "offers": []}
     sync = {
@@ -155,12 +209,16 @@ def _capture_empty_state(browser: Browser, base_url: str, width: int, height: in
     )
     page.goto(base_url, wait_until="networkidle")
     page.get_by_role("heading", name="Aucune offre active aujourd’hui").wait_for()
+    assert page.evaluate("getComputedStyle(document.documentElement).colorScheme") == color_scheme
     _assert_page_shape(page)
-    _assert_accessibility(page, f"vide {width}px")
+    _assert_accessibility(page, f"vide {width}px · thème {color_scheme}")
     assert page.get_by_role("link", name="Consulter la source").get_attribute("href") == (
         "https://www.refectory.fr/conditions-des-offres-en-cours"
     )
-    page.screenshot(path=str(ARTIFACTS / f"dashboard-empty-{width}.png"), full_page=True)
+    page.screenshot(
+        path=str(ARTIFACTS / f"dashboard-empty-{width}-{color_scheme}.png"),
+        full_page=True,
+    )
     page.close()
 
 
@@ -267,11 +325,12 @@ def run(base_url: str = DEFAULT_URL) -> None:
         )
         monitor.goto(base_url, wait_until="networkidle")
         _assert_page_shape(monitor)
+        _assert_food_truck_filters(monitor)
         _assert_pwa(monitor, base_url)
         monitor.close()
 
-        _capture_empty_state(browser, base_url, 375, 812)
-        _capture_empty_state(browser, base_url, 768, 1024)
+        _capture_empty_state(browser, base_url, 375, 812, "dark")
+        _capture_empty_state(browser, base_url, 768, 1024, "light")
         _capture_offer_state(browser, base_url)
         browser.close()
 
@@ -281,7 +340,7 @@ def run(base_url: str = DEFAULT_URL) -> None:
     assert not bad_responses, f"Réponses HTTP en échec : {bad_responses}"
     print(
         "QA navigateur réussie : PWA, desktop, tablette, mobile, "
-        "offre avec code et code recherché."
+        "filtres food trucks, offre avec code et code recherché."
     )
 
 
