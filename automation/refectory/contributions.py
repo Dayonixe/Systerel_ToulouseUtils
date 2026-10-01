@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import sys
+import time
 from typing import Any, Callable
 from urllib.parse import urlparse
 
@@ -20,6 +21,8 @@ DEFAULT_DATA_DIR = PROJECT_ROOT / "public" / "data"
 APPROVED_CODES_FILENAME = "refectory-approved-codes.json"
 OFFERS_FILENAME = "refectory-offers.json"
 MAX_FEED_SIZE = 512_000
+FEED_TIMEOUT_SECONDS = 30
+FEED_RETRY_DELAYS_SECONDS = (2, 5)
 
 OFFER_ID_PATTERN = re.compile(
     r"^refectory-(?:\d{4}-\d{2}-\d{2}|sans-debut)-"
@@ -121,17 +124,51 @@ def apply_approved_codes(
     ]
 
 
+def _is_retryable_status(status_code: int) -> bool:
+    return status_code in {408, 425, 429} or 500 <= status_code < 600
+
+
 def fetch_approved_feed(feed_url: str) -> dict[str, Any]:
     parsed_url = urlparse(feed_url)
     if parsed_url.scheme != "https" or not parsed_url.netloc:
         raise ValueError("L'URL du flux approuvé doit utiliser HTTPS")
 
-    response = requests.get(
-        feed_url,
-        headers={"User-Agent": "Systerel-ToulouseUtils/1.0"},
-        timeout=20,
-    )
-    response.raise_for_status()
+    response: requests.Response | None = None
+    attempts = len(FEED_RETRY_DELAYS_SECONDS) + 1
+    for attempt in range(attempts):
+        try:
+            response = requests.get(
+                feed_url,
+                headers={"User-Agent": "Systerel-ToulouseUtils/1.0"},
+                timeout=FEED_TIMEOUT_SECONDS,
+            )
+            if not _is_retryable_status(response.status_code):
+                response.raise_for_status()
+                break
+            response.raise_for_status()
+        except (requests.Timeout, requests.ConnectionError, requests.HTTPError) as error:
+            should_retry = (
+                isinstance(error, (requests.Timeout, requests.ConnectionError))
+                or (
+                    response is not None
+                    and _is_retryable_status(response.status_code)
+                )
+            )
+            if not should_retry or attempt == attempts - 1:
+                raise
+
+            delay = FEED_RETRY_DELAYS_SECONDS[attempt]
+            print(
+                f"Flux de contributions temporairement indisponible "
+                f"(tentative {attempt + 1}/{attempts}) : {error}. "
+                f"Nouvelle tentative dans {delay} s.",
+                file=sys.stderr,
+            )
+            time.sleep(delay)
+
+    if response is None:
+        raise RuntimeError("Le flux approuvé n'a renvoyé aucune réponse")
+
     if len(response.content) > MAX_FEED_SIZE:
         raise ValueError("Le flux approuvé dépasse la taille maximale autorisée")
     payload = response.json()

@@ -4,8 +4,10 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pytest
+import requests
 
-from automation.refectory.contributions import sync_once
+from automation.refectory import contributions
+from automation.refectory.contributions import fetch_approved_feed, sync_once
 
 
 PARIS = ZoneInfo("Europe/Paris")
@@ -33,6 +35,77 @@ def _write_offer_feed(data_dir: Path) -> None:
 
 def _read(data_dir: Path, filename: str) -> dict[str, object]:
     return json.loads((data_dir / filename).read_text(encoding="utf-8"))
+
+
+def _response(status_code: int, payload: dict[str, object]) -> requests.Response:
+    response = requests.Response()
+    response.status_code = status_code
+    response._content = json.dumps(payload).encode("utf-8")
+    response.url = "https://example.test/codes"
+    return response
+
+
+def test_feed_fetch_retries_temporary_timeouts(monkeypatch: pytest.MonkeyPatch) -> None:
+    payload = {"schemaVersion": 1, "codes": []}
+    responses: list[requests.Response | Exception] = [
+        requests.Timeout("délai dépassé"),
+        requests.ConnectionError("connexion interrompue"),
+        _response(200, payload),
+    ]
+    delays: list[int] = []
+    timeouts: list[int] = []
+
+    def fake_get(*_args: object, **kwargs: object) -> requests.Response:
+        timeouts.append(int(kwargs["timeout"]))
+        result = responses.pop(0)
+        if isinstance(result, Exception):
+            raise result
+        return result
+
+    monkeypatch.setattr(contributions.requests, "get", fake_get)
+    monkeypatch.setattr(contributions.time, "sleep", delays.append)
+
+    assert fetch_approved_feed("https://example.test/codes") == payload
+    assert delays == [2, 5]
+    assert timeouts == [30, 30, 30]
+
+
+def test_feed_fetch_retries_temporary_http_errors(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    payload = {"schemaVersion": 1, "codes": []}
+    responses = [_response(503, {"error": "indisponible"}), _response(200, payload)]
+    delays: list[int] = []
+
+    def fake_get(*_args: object, **_kwargs: object) -> requests.Response:
+        return responses.pop(0)
+
+    monkeypatch.setattr(contributions.requests, "get", fake_get)
+    monkeypatch.setattr(contributions.time, "sleep", delays.append)
+
+    assert fetch_approved_feed("https://example.test/codes") == payload
+    assert delays == [2]
+
+
+def test_feed_fetch_does_not_retry_permanent_http_errors(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls = 0
+    delays: list[int] = []
+
+    def fake_get(*_args: object, **_kwargs: object) -> requests.Response:
+        nonlocal calls
+        calls += 1
+        return _response(400, {"error": "requête invalide"})
+
+    monkeypatch.setattr(contributions.requests, "get", fake_get)
+    monkeypatch.setattr(contributions.time, "sleep", delays.append)
+
+    with pytest.raises(requests.HTTPError):
+        fetch_approved_feed("https://example.test/codes")
+
+    assert calls == 1
+    assert delays == []
 
 
 def test_approved_submissions_are_aggregated_and_attached(tmp_path: Path) -> None:
