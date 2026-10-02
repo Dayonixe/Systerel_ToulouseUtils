@@ -1,9 +1,6 @@
 name: Refresh Refectory offers
 
 on:
-  schedule:
-    - cron: "17 8 * * *"
-      timezone: "Europe/Paris"
   workflow_dispatch:
 
 permissions:
