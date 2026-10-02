@@ -51,7 +51,7 @@ jobs:
 
       - name: Commit the approved code
         if: steps.changes.outputs.changed == 'true'
-        run: python -m automation.maintenance --threshold-days 55
+        run: python -m automation.maintenance
 
       - uses: actions/setup-node@v4
         if: steps.changes.outputs.changed == 'true'

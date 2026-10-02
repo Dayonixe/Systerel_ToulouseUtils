@@ -46,8 +46,8 @@ jobs:
           REFECTORY_CODES_FEED_URL: ${{ vars.REFECTORY_CODES_FEED_URL }}
         run: python -m automation.refectory.contributions
 
-      - name: Commit changed offers or maintain scheduled workflows
-        run: python -m automation.maintenance --threshold-days 55
+      - name: Commit changed offers or codes
+        run: python -m automation.maintenance
 
       - uses: actions/setup-node@v4
         with:

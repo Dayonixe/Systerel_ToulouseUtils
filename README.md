@@ -1,27 +1,27 @@
 # Le Hub Toulouse
 
-Portail public destiné aux collaborateurs du site de Toulouse. Il affiche les food trucks présents autour du bureau, les offres promotionnelles Refectory valables à Toulouse et permet aux collaborateurs de partager le code commun reçu par e-mail, SMS ou notification.
+A public information portal for employees at the Toulouse office. It shows nearby food trucks, current Refectory promotions available globally or in Toulouse, and the shared promotion codes submitted by employees.
 
-## Fonctionnement
+The site is a Progressive Web App (PWA) published on GitHub Pages. It includes a `noindex` directive, but remains publicly accessible to anyone who knows its URL.
 
-- L’interface React lit des fichiers JSON statiques dans `public/data`.
-- Le planning hebdomadaire des food trucks est conservé dans `public/data/food-trucks.json`. La page affiche le jour courant par défaut et permet de consulter les autres jours ou tous les passages.
-- Le collecteur Python ouvre la page publique Refectory avec Playwright.
-- Les offres sont normalisées, filtrées pour Toulouse puis publiées avec le site, même lorsque leur code est encore inconnu.
-- Un identifiant stable rattache le code partagé à toute la période de validité de l’offre : le code n’est donc pas réinitialisé chaque jour.
-- Les codes reçus par les collaborateurs passent par un formulaire Tally et une validation manuelle dans Google Sheets. Le site ne lit que les lignes approuvées.
-- Plusieurs soumissions du même code sont comptées comme confirmations. Un code contradictoire bloque la synchronisation et n’écrase jamais le code déjà approuvé.
-- Une erreur d’extraction conserve les dernières offres valides.
-- Un commit technique est créé après 55 jours sans activité afin de maintenir les workflows planifiés actifs.
+## How it works
 
-## Développement local
+- The React application reads static JSON files from `public/data`.
+- The weekly food-truck schedule is stored in `public/data/food-trucks.json`. The current day is selected by default, while the other days and the complete schedule remain available.
+- A Python collector uses Playwright to read Refectory's public current-offers page.
+- Offers are normalized, limited to global and Toulouse offers, and published even when their promotion code is not known yet.
+- A stable offer identifier keeps a contributed code attached to the offer for its full validity period, including week-long offers.
+- Employee submissions are approved manually before being imported. Duplicate submissions confirm a code; conflicting codes stop the synchronization instead of overwriting an approved value.
+- If Refectory extraction fails, the last valid published offers are preserved.
+
+## Local development
 
 ```powershell
 npm install
 npm run dev
 ```
 
-Tests et construction :
+Run the automated checks and production build with:
 
 ```powershell
 npm test
@@ -30,7 +30,7 @@ python -m pip install -r automation/requirements.txt
 python -m pytest automation/tests
 ```
 
-Pour tester la collecte réelle, Chromium doit être installé pour Playwright :
+Chromium is required to test the live Refectory collection:
 
 ```powershell
 python -m playwright install chromium
@@ -38,36 +38,31 @@ python -m automation.refectory.export
 python -m automation.refectory.contributions
 ```
 
-Avec le serveur local déjà lancé, le contrôle responsive, interactif et WCAG peut être rejoué ainsi :
+With the local development server already running, the responsive, interactive, PWA, and WCAG browser checks can be run with:
 
 ```powershell
 python automation/browser_qa.py
 ```
 
-## Publication
+## Deployment and automation
 
-Dans les paramètres GitHub Pages, sélectionner **GitHub Actions** comme source. Deux workflows sont fournis :
+Set the GitHub Pages source to **GitHub Actions** in the repository settings. The repository contains three workflows:
 
-- `deploy-pages.yml` publie le portail après un changement de code ;
-- `refresh-offers.yml` récupère les offres chaque matin à 8 h 17, heure de Paris, importe les codes approuvés puis republie le portail ;
-- `sync-contributed-codes.yml` vérifie les nouvelles contributions approuvées toutes les 15 minutes, du lundi au vendredi entre 8 h et 18 h.
+- `deploy-pages.yml` tests, builds, and deploys the portal after application changes, and can also be started manually.
+- `refresh-offers.yml` fetches the latest Refectory offers, imports approved codes, commits actual data changes, and deploys the portal. cron-job.org dispatches it every day at **08:20 Europe/Paris**.
+- `sync-contributed-codes.yml` imports newly approved codes and deploys only when the published data changes. cron-job.org dispatches it every 15 minutes between **08:00 and 18:00 Europe/Paris**.
 
-Le site inclut une directive `noindex`, mais reste accessible publiquement à toute personne connaissant son URL.
+The two externally scheduled workflows expose `workflow_dispatch` and contain no GitHub Actions `schedule` or `cron` trigger. cron-job.org calls GitHub's workflow-dispatch API with the repository's default branch as `ref`. Its fine-grained GitHub token must be stored only in cron-job.org and limited to this repository with **Actions: Read and write** permission.
 
-## Mettre à jour les food trucks
+The workflows use these existing GitHub Actions variables:
 
-Le fichier `public/data/food-trucks.json` reprend le planning du Google Sheet de référence. Les enseignes, emplacements et passages sont séparés afin qu’un même food truck puisse être présent plusieurs jours ou sur plusieurs parkings sans dupliquer ses coordonnées.
+- `VITE_REFECTORY_FORM_URL`: public contribution-form URL embedded in the frontend;
+- `REFECTORY_CODES_FEED_URL`: approved-code feed consumed by the Python importer.
 
-Après une modification, lancer `npm test`, `npm run build` et `python -m pytest automation/tests` pour vérifier les références, les jours et le rendu du portail.
+No token or secret is stored in the repository. The maintenance script creates a commit only when published Refectory offers or approved codes actually change.
 
-## Configurer le formulaire de contribution
+## Updating food trucks
 
-1. Créer un formulaire Tally avec un champ visible intitulé `Code promotionnel reçu`.
-2. Ajouter trois champs cachés nommés exactement `offer_id`, `offer_label` et `valid_until`. Le bouton du portail les préremplit automatiquement.
-3. Relier Tally à un Google Sheet nommé `Soumissions`, puis ajouter une colonne `status`. Une ligne n’est publiée que lorsque sa valeur est `approved`, `approuve` ou `valide`.
-4. Dans ce classeur, ouvrir **Extensions > Apps Script**, copier le contenu de `integrations/google-apps-script/Code.gs`, puis déployer le script comme application Web accessible à toute personne disposant du lien.
-5. Dans **Settings > Secrets and variables > Actions > Variables** du dépôt GitHub, créer :
-   - `VITE_REFECTORY_FORM_URL` avec l’URL publique du formulaire Tally ;
-   - `REFECTORY_CODES_FEED_URL` avec l’URL `/exec` du déploiement Apps Script.
+`public/data/food-trucks.json` contains the schedule sourced from the reference Google Sheet. Vendors, locations, and visits are stored separately so the same food truck can appear on several days or at several locations without duplicating its contact details.
 
-Le formulaire est ouvert à plusieurs personnes, mais aucune soumission n’atteint le site sans votre approbation dans le Sheet. Le flux Apps Script ne publie ni nom, ni e-mail, ni numéro de téléphone : uniquement l’identifiant d’offre et le code.
+After changing the schedule, run `npm test`, `npm run build`, and `python -m pytest automation/tests` to validate references, weekdays, and the rendered portal.
