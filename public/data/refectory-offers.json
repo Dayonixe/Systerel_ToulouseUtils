@@ -1,20 +1,5 @@
 {
   "schemaVersion": 1,
   "sourceUrl": "https://www.refectory.fr/conditions-des-offres-en-cours",
-  "offers": [
-    {
-      "id": "refectory-2026-09-28-2026-10-02-2f692e598de1",
-      "originalText": "Du 28/09 au 02/10, bénéficiez de 2€ offerts sur votre commande d'un montant minimum de 7.90€ en utilisant le code reçu par mail, sms ou notification app. L'offre est valable une fois par client. L'offre est valable uniquement à réception de la communication. L'offre n'est ni échangeable, ni remboursable, ni cumulable avec d'autres offres en cours.",
-      "startDate": "2026-09-28",
-      "endDate": "2026-10-02",
-      "code": "CARTEAUTOMNE",
-      "codeSource": "contributor",
-      "confirmationCount": 1,
-      "discountLabel": "2 € offerts",
-      "minimumOrderLabel": "7,90 €",
-      "cities": [],
-      "scope": "global",
-      "isCurrentlyValid": true
-    }
-  ]
+  "offers": []
 }
