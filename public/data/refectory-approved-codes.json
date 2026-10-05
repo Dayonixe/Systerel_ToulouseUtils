@@ -7,6 +7,13 @@
       "confirmationCount": 1,
       "approvedAt": "2026-09-29T18:57:34+00:00",
       "lastConfirmedAt": "2026-09-29T18:57:34+00:00"
+    },
+    {
+      "offerId": "refectory-2026-10-05-2026-10-09-721a9b70695b",
+      "code": "NOUVEAUTES",
+      "confirmationCount": 1,
+      "approvedAt": "2026-10-05T08:00:58+00:00",
+      "lastConfirmedAt": "2026-10-05T08:00:58+00:00"
     }
   ]
 }
