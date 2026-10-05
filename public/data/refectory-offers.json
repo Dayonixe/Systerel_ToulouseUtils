@@ -1,5 +1,20 @@
 {
   "schemaVersion": 1,
   "sourceUrl": "https://www.refectory.fr/conditions-des-offres-en-cours",
-  "offers": []
+  "offers": [
+    {
+      "id": "refectory-2026-10-05-2026-10-09-721a9b70695b",
+      "originalText": "Du 05/10 au 09/10, bénéficiez de 3€ offerts sur votre commande d'un montant minimum de 8.90€ en utilisant le code reçu par mail, sms ou notification app. L'offre est valable pour tous les clients n'ayant pas commandé du 28/09 au 02/10 et une fois par client. L'offre est valable uniquement à réception de la communication. L'offre n'est ni échangeable, ni remboursable, ni cumulable avec d'autres offres en cours.",
+      "startDate": "2026-10-05",
+      "endDate": "2026-10-09",
+      "code": "",
+      "codeSource": null,
+      "confirmationCount": 0,
+      "discountLabel": "3 € offerts",
+      "minimumOrderLabel": "8,90 €",
+      "cities": [],
+      "scope": "global",
+      "isCurrentlyValid": true
+    }
+  ]
 }
