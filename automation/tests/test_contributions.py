@@ -101,11 +101,31 @@ def test_feed_fetch_does_not_retry_permanent_http_errors(
     monkeypatch.setattr(contributions.requests, "get", fake_get)
     monkeypatch.setattr(contributions.time, "sleep", delays.append)
 
-    with pytest.raises(requests.HTTPError):
+    with pytest.raises(RuntimeError, match="HTTP 400") as error:
         fetch_approved_feed("https://example.test/codes")
 
     assert calls == 1
     assert delays == []
+    assert "example.test" not in str(error.value)
+
+
+def test_feed_fetch_retries_invalid_json(monkeypatch: pytest.MonkeyPatch) -> None:
+    payload = {"schemaVersion": 1, "codes": []}
+    invalid_response = requests.Response()
+    invalid_response.status_code = 200
+    invalid_response._content = b"<html>temporary upstream error</html>"
+    invalid_response.url = "https://example.test/codes"
+    responses = [invalid_response, _response(200, payload)]
+    delays: list[int] = []
+
+    def fake_get(*_args: object, **_kwargs: object) -> requests.Response:
+        return responses.pop(0)
+
+    monkeypatch.setattr(contributions.requests, "get", fake_get)
+    monkeypatch.setattr(contributions.time, "sleep", delays.append)
+
+    assert fetch_approved_feed("https://example.test/codes") == payload
+    assert delays == [2]
 
 
 def test_approved_submissions_are_aggregated_and_attached(tmp_path: Path) -> None:

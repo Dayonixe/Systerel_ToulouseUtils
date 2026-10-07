@@ -3,28 +3,26 @@ name: Refresh Refectory offers
 on:
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
+permissions: {}
 
 jobs:
-  refresh-and-deploy:
+  refresh-and-build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: write
+      pages: read
+    concurrency:
+      group: refectory-data
+      cancel-in-progress: false
+    outputs:
+      extraction_outcome: ${{ steps.extract.outcome }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
           cache: pip
@@ -46,10 +44,15 @@ jobs:
           REFECTORY_CODES_FEED_URL: ${{ vars.REFECTORY_CODES_FEED_URL }}
         run: python -m automation.refectory.contributions
 
+      - name: Warn about contribution import failure
+        if: steps.contributions.outcome == 'failure'
+        run: |
+          echo "::warning title=Approved-code feed unavailable::The last approved codes remain published. The dedicated synchronization will retry on its next external dispatch."
+
       - name: Commit changed offers or codes
         run: python -m automation.maintenance
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -60,18 +63,38 @@ jobs:
         env:
           VITE_REFECTORY_FORM_URL: ${{ vars.VITE_REFECTORY_FORM_URL }}
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: dist
+
+  deploy:
+    needs: refresh-and-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
 
+  report-extraction-failure:
+    needs: [refresh-and-build, deploy]
+    if: >-
+      ${{ always()
+        && needs.refresh-and-build.result == 'success'
+        && needs.refresh-and-build.outputs.extraction_outcome == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Report extraction failure
-        if: steps.extract.outcome == 'failure'
-        run: exit 1
-
-      - name: Report contribution import failure
-        if: steps.contributions.outcome == 'failure'
-        run: exit 1
+        run: |
+          echo "::error title=Refectory extraction failed::The last valid offers were preserved and deployed."
+          exit 1

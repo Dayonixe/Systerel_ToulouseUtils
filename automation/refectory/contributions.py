@@ -128,53 +128,74 @@ def _is_retryable_status(status_code: int) -> bool:
     return status_code in {408, 425, 429} or 500 <= status_code < 600
 
 
+def _feed_error_summary(
+    error: requests.RequestException | requests.JSONDecodeError,
+    response: requests.Response | None,
+) -> str:
+    if isinstance(error, requests.Timeout):
+        return "délai dépassé"
+    if isinstance(error, requests.ConnectionError):
+        return "connexion interrompue"
+    if isinstance(error, requests.JSONDecodeError):
+        status = response.status_code if response is not None else "inconnu"
+        return f"réponse JSON invalide (HTTP {status})"
+    if isinstance(error, requests.HTTPError) and response is not None:
+        return f"HTTP {response.status_code}"
+    return type(error).__name__
+
+
 def fetch_approved_feed(feed_url: str) -> dict[str, Any]:
     parsed_url = urlparse(feed_url)
     if parsed_url.scheme != "https" or not parsed_url.netloc:
         raise ValueError("L'URL du flux approuvé doit utiliser HTTPS")
 
-    response: requests.Response | None = None
     attempts = len(FEED_RETRY_DELAYS_SECONDS) + 1
     for attempt in range(attempts):
+        response: requests.Response | None = None
         try:
             response = requests.get(
                 feed_url,
                 headers={"User-Agent": "Systerel-ToulouseUtils/1.0"},
                 timeout=FEED_TIMEOUT_SECONDS,
             )
-            if not _is_retryable_status(response.status_code):
-                response.raise_for_status()
-                break
             response.raise_for_status()
-        except (requests.Timeout, requests.ConnectionError, requests.HTTPError) as error:
+            if len(response.content) > MAX_FEED_SIZE:
+                raise ValueError("Le flux approuvé dépasse la taille maximale autorisée")
+            payload = response.json()
+            if not isinstance(payload, dict):
+                raise ValueError("Le flux approuvé doit contenir un objet JSON")
+            return payload
+        except (
+            requests.Timeout,
+            requests.ConnectionError,
+            requests.HTTPError,
+            requests.JSONDecodeError,
+        ) as error:
             should_retry = (
                 isinstance(error, (requests.Timeout, requests.ConnectionError))
+                or isinstance(error, requests.JSONDecodeError)
                 or (
                     response is not None
                     and _is_retryable_status(response.status_code)
                 )
             )
+            summary = _feed_error_summary(error, response)
             if not should_retry or attempt == attempts - 1:
-                raise
+                raise RuntimeError(
+                    f"Flux de contributions indisponible après "
+                    f"{attempt + 1} tentative(s) : {summary}"
+                ) from error
 
             delay = FEED_RETRY_DELAYS_SECONDS[attempt]
             print(
                 f"Flux de contributions temporairement indisponible "
-                f"(tentative {attempt + 1}/{attempts}) : {error}. "
+                f"(tentative {attempt + 1}/{attempts}) : {summary}. "
                 f"Nouvelle tentative dans {delay} s.",
                 file=sys.stderr,
             )
             time.sleep(delay)
 
-    if response is None:
-        raise RuntimeError("Le flux approuvé n'a renvoyé aucune réponse")
-
-    if len(response.content) > MAX_FEED_SIZE:
-        raise ValueError("Le flux approuvé dépasse la taille maximale autorisée")
-    payload = response.json()
-    if not isinstance(payload, dict):
-        raise ValueError("Le flux approuvé doit contenir un objet JSON")
-    return payload
+    raise RuntimeError("Le flux approuvé n'a renvoyé aucune réponse")
 
 
 def _incoming_records(payload: dict[str, Any]) -> list[ApprovedCode]:

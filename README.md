@@ -48,9 +48,9 @@ python automation/browser_qa.py
 
 Set the GitHub Pages source to **GitHub Actions** in the repository settings. The repository contains three workflows:
 
-- `deploy-pages.yml` tests, builds, and deploys the portal after application changes, and can also be started manually.
-- `refresh-offers.yml` fetches the latest Refectory offers, imports approved codes, commits actual data changes, and deploys the portal. cron-job.org dispatches it every day at **08:20 Europe/Paris**.
-- `sync-contributed-codes.yml` imports newly approved codes and deploys only when the published data changes. cron-job.org dispatches it every 15 minutes between **08:00 and 18:00 Europe/Paris**.
+- `deploy-pages.yml` tests and builds the portal after application changes, then deploys the resulting Pages artifact. It can also be started manually.
+- `refresh-offers.yml` fetches the latest Refectory offers, imports approved codes, commits actual data changes, builds a Pages artifact, and deploys it. cron-job.org dispatches it every day at **08:20 Europe/Paris**.
+- `sync-contributed-codes.yml` imports newly approved codes and builds and deploys a Pages artifact only when the published data changes. cron-job.org dispatches it every 15 minutes between **08:00 and 18:00 Europe/Paris**.
 
 The two externally scheduled workflows expose `workflow_dispatch` and contain no GitHub Actions `schedule` or `cron` trigger. cron-job.org calls GitHub's workflow-dispatch API with the repository's default branch as `ref`. Its fine-grained GitHub token must be stored only in cron-job.org and limited to this repository with **Actions: Read and write** permission.
 
@@ -60,6 +60,8 @@ The workflows use these existing GitHub Actions variables:
 - `REFECTORY_CODES_FEED_URL`: approved-code feed consumed by the Python importer.
 
 No token or secret is stored in the repository. The maintenance script creates a commit only when published Refectory offers or approved codes actually change.
+
+Data updates and deployments use separate concurrency groups. Refectory update jobs are serialized to avoid concurrent commits, while only deployment jobs wait in the GitHub Pages queue. A temporary approved-code feed failure is retried and does not fail the daily offer refresh; the dedicated code synchronization reports the failure and retries at the next external dispatch. The `github-pages` environment must not require reviewer approval for this unattended deployment setup.
 
 ## Updating food trucks
 
