@@ -1,20 +1,5 @@
 {
   "schemaVersion": 1,
   "sourceUrl": "https://www.refectory.fr/conditions-des-offres-en-cours",
-  "offers": [
-    {
-      "id": "refectory-2026-10-12-2026-10-16-e31781d12591",
-      "originalText": "Du 12/10 au 16/10, pour l'achat d'une nouvelle recette disponible dans le corner \"Carte automne - Nouvelles recettes\", on glisse une surprise dans votre sac de commande. Les plats éligibles sont les suivants : Parmentier de lentilles & potimarron, Pates à l'encre de seiche, crevettes & sauce à l'aneth, Gnocchis forestier, Poulet frit & riz sauté, Tortellini ricotta-épinards & sauce napolitaine, Bowl poulet sésame, Coeur de légumes : Potiron rôti\nL'offre n'est ni échangeable, ni remboursable.",
-      "startDate": "2026-10-12",
-      "endDate": "2026-10-16",
-      "code": "",
-      "codeSource": null,
-      "confirmationCount": 0,
-      "discountLabel": null,
-      "minimumOrderLabel": null,
-      "cities": [],
-      "scope": "global",
-      "isCurrentlyValid": true
-    }
-  ]
+  "offers": []
 }
