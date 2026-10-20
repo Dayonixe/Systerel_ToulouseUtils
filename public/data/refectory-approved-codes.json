@@ -14,6 +14,13 @@
       "confirmationCount": 1,
       "approvedAt": "2026-10-05T08:00:58+00:00",
       "lastConfirmedAt": "2026-10-05T08:00:58+00:00"
+    },
+    {
+      "offerId": "refectory-2026-10-19-2026-10-23-3c948d21c53a",
+      "code": "MAITRESAUCE",
+      "confirmationCount": 1,
+      "approvedAt": "2026-10-20T07:00:58+00:00",
+      "lastConfirmedAt": "2026-10-20T07:00:58+00:00"
     }
   ]
 }
