@@ -1,5 +1,20 @@
 {
   "schemaVersion": 1,
   "sourceUrl": "https://www.refectory.fr/conditions-des-offres-en-cours",
-  "offers": []
+  "offers": [
+    {
+      "id": "refectory-2026-10-19-2026-10-23-3c948d21c53a",
+      "originalText": "Du 19/10 au 23/10, bénéficiez de 2€ offerts sur votre commande d'un montant minimum de 13€ en utilisant le code reçu par mail, sms ou notification app. L'offre est valable une fois par client. L'offre est valable uniquement à réception de la communication. L'offre n'est ni échangeable, ni remboursable, ni cumulable avec d'autres offres en cours.",
+      "startDate": "2026-10-19",
+      "endDate": "2026-10-23",
+      "code": "",
+      "codeSource": null,
+      "confirmationCount": 0,
+      "discountLabel": "2 € offerts",
+      "minimumOrderLabel": "13 €",
+      "cities": [],
+      "scope": "global",
+      "isCurrentlyValid": true
+    }
+  ]
 }
