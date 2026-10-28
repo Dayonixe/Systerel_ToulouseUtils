@@ -21,6 +21,13 @@
       "confirmationCount": 1,
       "approvedAt": "2026-10-20T07:00:58+00:00",
       "lastConfirmedAt": "2026-10-20T07:00:58+00:00"
+    },
+    {
+      "offerId": "refectory-2026-10-26-2026-10-30-9bdff2411f41",
+      "code": "VIVELASAUCE",
+      "confirmationCount": 1,
+      "approvedAt": "2026-10-28T07:21:09+00:00",
+      "lastConfirmedAt": "2026-10-28T07:21:09+00:00"
     }
   ]
 }
