@@ -55,6 +55,9 @@ def export_once(
         ]
         visible.sort(key=lambda offer: (offer.end_date or now.date(), offer.code or ""))
         code_count = sum(1 for offer in visible if offer.code)
+        waiting_for_code_count = sum(
+            1 for offer in visible if offer.requires_code and not offer.code
+        )
 
         feed = {
             "schemaVersion": 1,
@@ -69,7 +72,7 @@ def export_once(
             "lastSuccessAt": timestamp,
             "offerCount": len(visible),
             "codeCount": code_count,
-            "waitingForCodeCount": len(visible) - code_count,
+            "waitingForCodeCount": waiting_for_code_count,
             "message": None,
         }
         write_json(offers_path, feed)

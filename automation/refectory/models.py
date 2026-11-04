@@ -18,6 +18,7 @@ class Offer:
     cities: tuple[str, ...]
     scope: str
     is_currently_valid: bool
+    requires_code: bool
     code_source: str | None = None
     confirmation_count: int = 0
 
@@ -48,4 +49,5 @@ class Offer:
             "cities": list(self.cities),
             "scope": self.scope,
             "isCurrentlyValid": self.is_currently_valid,
+            "requiresCode": self.requires_code,
         }

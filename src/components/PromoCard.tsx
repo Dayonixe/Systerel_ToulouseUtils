@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { PromotionOffer } from "../domain/offers";
-import { buildContributionUrl, formatOfferPeriod } from "../domain/offers";
+import { buildContributionUrl, formatOfferPeriod, needsCodeContribution } from "../domain/offers";
 import { CheckIcon, CopyIcon, ExternalIcon } from "./Icons";
 
 interface PromoCardProps {
@@ -13,7 +13,9 @@ export function PromoCard({ offer, index, contributionFormUrl }: PromoCardProps)
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
   const hasCode = Boolean(offer.code);
-  const contributionUrl = buildContributionUrl(contributionFormUrl, offer);
+  const requiresCode = offer.requiresCode !== false;
+  const contributionNeeded = needsCodeContribution(offer);
+  const contributionUrl = requiresCode ? buildContributionUrl(contributionFormUrl, offer) : null;
 
   async function copyCode() {
     try {
@@ -29,8 +31,8 @@ export function PromoCard({ offer, index, contributionFormUrl }: PromoCardProps)
   return (
     <article className="promo-card" style={{ "--card-index": index } as React.CSSProperties}>
       <div className="promo-card__topline">
-        <span className={`promo-card__status${hasCode ? "" : " promo-card__status--waiting"}`}>
-          <span aria-hidden="true" /> {hasCode ? "Code disponible" : "Code recherché"}
+        <span className={`promo-card__status${contributionNeeded ? " promo-card__status--waiting" : ""}`}>
+          <span aria-hidden="true" /> {hasCode ? "Code disponible" : requiresCode ? "Code recherché" : "Offre automatique"}
         </span>
         <span className="promo-card__scope">
           {offer.scope === "global" ? "Tous les secteurs" : "Toulouse"}
@@ -59,7 +61,7 @@ export function PromoCard({ offer, index, contributionFormUrl }: PromoCardProps)
               </p>
             )}
           </>
-        ) : (
+        ) : requiresCode ? (
           <div className="contribution-callout">
             <div>
               <strong>Vous avez reçu le code ?</strong>
@@ -73,6 +75,8 @@ export function PromoCard({ offer, index, contributionFormUrl }: PromoCardProps)
               <small>Formulaire de contribution bientôt disponible.</small>
             )}
           </div>
+        ) : (
+          <p className="promo-card__feedback">Aucun code nécessaire pour cette offre.</p>
         )}
 
         {offer.minimumOrderLabel && (

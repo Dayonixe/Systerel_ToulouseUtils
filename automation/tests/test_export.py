@@ -100,3 +100,24 @@ def test_failed_export_preserves_last_valid_offers(tmp_path: Path) -> None:
     assert saved == previous
     assert sync["status"] == "error"
     assert sync["offerCount"] == 1
+
+
+def test_export_does_not_request_a_code_for_an_automatic_offer(tmp_path: Path) -> None:
+    text = """
+Offres en cours
+Jeudi 05/11/2026 :
+Pour toute livraison le 05/11 d'une commande d'un montant minimum de 13€, on vous offre un muffin banoffee qui sera glissé dans votre sac.
+Offres de bienvenue
+"""
+
+    result = export_once(
+        fetch_text=lambda: text,
+        data_dir=tmp_path,
+        now=datetime(2026, 11, 5, 8, 17, tzinfo=PARIS),
+    )
+    payload = json.loads((tmp_path / "refectory-offers.json").read_text(encoding="utf-8"))
+    sync = json.loads((tmp_path / "refectory-sync.json").read_text(encoding="utf-8"))
+
+    assert result == 0
+    assert payload["offers"][0]["requiresCode"] is False
+    assert sync["waitingForCodeCount"] == 0

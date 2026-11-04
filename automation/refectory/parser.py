@@ -54,6 +54,11 @@ MONTHS_FR = {
 }
 
 SECTION_ENDINGS = ("offres de bienvenue", "parrainage")
+DAILY_OFFER_START = re.compile(
+    r"^\s*(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\s+"
+    r"(\d{1,2})/(\d{1,2})/(\d{4})",
+    flags=re.IGNORECASE,
+)
 
 
 def _ascii(value: str) -> str:
@@ -95,6 +100,12 @@ def parse_offer_dates(text: str, reference: date | None = None) -> tuple[date | 
     """Extract an inclusive validity period, including year transitions."""
 
     reference = reference or date.today()
+    daily = DAILY_OFFER_START.match(text)
+    if daily:
+        day, month, year = map(int, daily.groups())
+        offer_date = date(year, month, day)
+        return offer_date, offer_date
+
     full_numeric = re.search(
         r"\bdu\s+(\d{1,2})/(\d{1,2})/(\d{4})\s+au\s+(\d{1,2})/(\d{1,2})/(\d{4})",
         text,
@@ -134,7 +145,7 @@ def extract_code(text: str) -> str | None:
     """Extract a code only when introduced by explicit promotional wording."""
 
     patterns = (
-        r"(?:avec|indiquant|utilisez?|saisissez?)\s+(?:le\s+)?code(?:\s+promo)?\s*[:\-]?\s*[\"“]?([A-Z0-9][A-Z0-9-]{3,})",
+        r"(?:avec|indiquant|utilisez?|utilisant|saisissez?)\s+(?:le\s+)?code(?:\s+promo)?\s*[:\-]?\s*[\"“]?([A-Z0-9][A-Z0-9-]{3,})",
         r"code\s+promo(?:tionnel)?\s*[:\-]?\s*[\"“]?([A-Z0-9][A-Z0-9-]{3,})",
     )
     for pattern in patterns:
@@ -206,10 +217,16 @@ def _split_offers(full_text: str) -> list[str]:
     offers: list[list[str]] = []
     current: list[str] = []
     for line in section:
-        if re.match(r"^du\s+\d", line, flags=re.IGNORECASE) and current:
-            offers.append(current)
-            current = []
-        current.append(line)
+        is_offer_start = bool(
+            re.match(r"^du\s+\d", line, flags=re.IGNORECASE)
+            or DAILY_OFFER_START.match(line)
+        )
+        if is_offer_start:
+            if current:
+                offers.append(current)
+            current = [line]
+        elif current:
+            current.append(line)
     if current:
         offers.append(current)
 
@@ -244,6 +261,7 @@ def analyse_offers(full_text: str, reference: date | None = None) -> list[Offer]
         is_valid = bool(start and end and start <= reference <= end)
         discount = extract_discount(offer_text)
         minimum_order = extract_minimum_order(offer_text)
+        requires_code = bool(re.search(r"\bcode\b", offer_text, flags=re.IGNORECASE))
 
         results.append(
             Offer(
@@ -257,6 +275,7 @@ def analyse_offers(full_text: str, reference: date | None = None) -> list[Offer]
                 cities=cities,
                 scope=scope,
                 is_currently_valid=is_valid,
+                requires_code=requires_code,
                 code_source="refectory" if code else None,
             )
         )

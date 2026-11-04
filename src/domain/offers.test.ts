@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { activeOffers, buildContributionUrl, formatOfferPeriod, formatSyncLabel, type PromotionFeed, type PromotionOffer } from "./offers";
+import { activeOffers, buildContributionUrl, formatOfferPeriod, formatSyncLabel, needsCodeContribution, type PromotionFeed, type PromotionOffer } from "./offers";
 
 const offer: PromotionOffer = {
   id: "offer-1",
@@ -14,6 +14,7 @@ const offer: PromotionOffer = {
   cities: ["Toulouse"],
   scope: "toulouse",
   isCurrentlyValid: true,
+  requiresCode: true,
 };
 
 describe("activeOffers", () => {
@@ -52,6 +53,13 @@ describe("buildContributionUrl", () => {
 
   it("refuse une URL qui n'est pas HTTP", () => {
     expect(buildContributionUrl("javascript:alert(1)", offer)).toBeNull();
+  });
+});
+
+describe("needsCodeContribution", () => {
+  it("n'attend pas de code pour une offre automatique", () => {
+    expect(needsCodeContribution({ ...offer, code: "", requiresCode: false })).toBe(false);
+    expect(needsCodeContribution({ ...offer, code: "", requiresCode: true })).toBe(true);
   });
 });
 

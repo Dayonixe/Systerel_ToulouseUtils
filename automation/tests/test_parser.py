@@ -65,3 +65,35 @@ Offres de bienvenue
     second = analyse_offers(with_code, reference=date(2026, 9, 24))[0]
 
     assert first.identifier == second.identifier
+
+
+def test_daily_offer_format_is_split_and_parsed() -> None:
+    text = """
+Offres en cours
+Opération 1 jour = 1 bon plan :
+Jeudi 05/11/2026 :
+Pour toute livraison le 05/11 d'une commande d'un montant minimum de 13€, on vous offre un muffin banoffee.
+Mercredi 04/11/2026 :
+Pour toute commande réalisée le 04/11, bénéficiez de 2€ offerts sur votre commande d'un montant minimum de 8€90 en utilisant le code reçu par mail ou notification app.
+Mardi 03/11/2026
+: Pour toute livraison le 03/11 d'une commande contenant une entrée et un plat, on vous offre un cannelé choco.
+Lundi 02/11/2026 :
+Pour toute commande réalisée le 02/11, bénéficiez de 2€ offerts sur votre commande d'un montant minimum de 13€ en utilisant le code VIVELUNDI.
+Offres de bienvenue
+"""
+
+    offers = analyse_offers(text, reference=date(2026, 11, 4))
+
+    assert len(offers) == 4
+    assert [(offer.start_date, offer.end_date) for offer in offers] == [
+        (date(2026, 11, 5), date(2026, 11, 5)),
+        (date(2026, 11, 4), date(2026, 11, 4)),
+        (date(2026, 11, 3), date(2026, 11, 3)),
+        (date(2026, 11, 2), date(2026, 11, 2)),
+    ]
+    assert [offer.is_currently_valid for offer in offers] == [False, True, False, False]
+    assert [offer.code for offer in offers] == [None, None, None, "VIVELUNDI"]
+    assert [offer.requires_code for offer in offers] == [False, True, False, True]
+    assert [offer.discount_label for offer in offers] == [None, "2 € offerts", None, "2 € offerts"]
+    assert [offer.minimum_order_label for offer in offers] == ["13 €", "8,90 €", None, "13 €"]
+    assert "Opération 1 jour" not in offers[0].original_text

@@ -13,6 +13,7 @@ export interface PromotionOffer {
   cities: string[];
   scope: "global" | "toulouse";
   isCurrentlyValid: boolean;
+  requiresCode?: boolean;
 }
 
 export interface PromotionFeed {
@@ -46,6 +47,10 @@ export function activeOffers(feed: PromotionFeed, now = new Date()): PromotionOf
       (!offer.startDate || offer.startDate <= today) &&
       (!offer.endDate || today <= offer.endDate),
   );
+}
+
+export function needsCodeContribution(offer: PromotionOffer): boolean {
+  return offer.requiresCode !== false && !offer.code;
 }
 
 export function buildContributionUrl(
