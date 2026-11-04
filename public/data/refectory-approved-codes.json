@@ -28,6 +28,13 @@
       "confirmationCount": 1,
       "approvedAt": "2026-10-28T07:21:09+00:00",
       "lastConfirmedAt": "2026-10-28T07:21:09+00:00"
+    },
+    {
+      "offerId": "refectory-2026-11-04-2026-11-04-91f2e1468918",
+      "code": "EXCLUAPP",
+      "confirmationCount": 1,
+      "approvedAt": "2026-11-04T18:38:48+00:00",
+      "lastConfirmedAt": "2026-11-04T18:38:48+00:00"
     }
   ]
 }
