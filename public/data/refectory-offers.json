@@ -3,19 +3,19 @@
   "sourceUrl": "https://www.refectory.fr/conditions-des-offres-en-cours",
   "offers": [
     {
-      "id": "refectory-2026-11-05-2026-11-05-11af047bab0c",
-      "originalText": "Jeudi 05/11/2026 :\nPour toute livraison le 05/11 d'une commande d'un montant minimum de 13€, on vous offre un muffin banoffee qui sera glissé dans votre sac de commande. Dans la limite des stocks disponibles. L'offre est valable une fois par client. L'offre n'est ni échangeable, ni remboursable, ni cumulable avec d'autres offres en cours. Le produit offert ne peut être modifié.",
-      "startDate": "2026-11-05",
-      "endDate": "2026-11-05",
+      "id": "refectory-2026-11-06-2026-11-06-c93f843edbfd",
+      "originalText": "Vendredi 06/11/2026 :\nPour toute commande réalisée le 06/11 et comportant au moins un dessert, bénéficiez de 1€ offert sur votre commande d'un montant minimum de 8€90 en utilisant le code reçu par mail ou notification app. L'offre est valable une fois par client. L'offre n'est ni échangeable, ni remboursable, ni cumulable avec d'autres offres en cours. Les fruits ne sont pas pris en compte dans cette offre. Le code est utilisable uniquement pour les abonnés à la newsletter ou aux notifications sur l'application depuis au moins le 05/11/2026.",
+      "startDate": "2026-11-06",
+      "endDate": "2026-11-06",
       "code": "",
       "codeSource": null,
       "confirmationCount": 0,
-      "discountLabel": null,
-      "minimumOrderLabel": "13 €",
+      "discountLabel": "1 € offerts",
+      "minimumOrderLabel": "8,90 €",
       "cities": [],
       "scope": "global",
       "isCurrentlyValid": true,
-      "requiresCode": false
+      "requiresCode": true
     }
   ]
 }
