@@ -21,11 +21,13 @@ DIAGNOSTICS_DIR = Path("artifacts/refectory")
 
 
 def _wait_for_offers(page: Page) -> None:
-    heading = page.locator("h2").filter(has_text=re.compile(r"^\s*Offres en cours\s*$", re.IGNORECASE)).first
+    heading = page.locator("h2").filter(
+        has_text=re.compile(
+            r"^\s*(?:Offres en cours|Offres de bienvenue)\s*$",
+            re.IGNORECASE,
+        )
+    ).first
     heading.wait_for(state="visible", timeout=CONTENT_TIMEOUT_MS)
-    heading.locator(
-        "xpath=following-sibling::*[self::p or self::h2][normalize-space()][1]"
-    ).wait_for(state="visible", timeout=CONTENT_TIMEOUT_MS)
 
 
 def _handle_cookie_banner(page: Page) -> None:
@@ -65,6 +67,17 @@ def _extract_section_text(html: str) -> str:
         None,
     )
     if heading is None:
+        welcome_heading = next(
+            (
+                candidate
+                for candidate in soup.find_all("h2")
+                if candidate.get_text(" ", strip=True).casefold()
+                == "offres de bienvenue"
+            ),
+            None,
+        )
+        if welcome_heading is not None:
+            return "Offres en cours\nOffres de bienvenue"
         raise RuntimeError("La section 'Offres en cours' est introuvable")
 
     container = heading.find_parent()
