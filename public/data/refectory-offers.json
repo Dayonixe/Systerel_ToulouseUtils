@@ -1,21 +1,5 @@
 {
   "schemaVersion": 1,
   "sourceUrl": "https://www.refectory.fr/conditions-des-offres-en-cours",
-  "offers": [
-    {
-      "id": "refectory-2026-11-12-2026-11-13-d30de8e378dd",
-      "originalText": "Du 12 au 13 novembre, bénéficiez de 2€ offerts sur votre commande d'un montant minimum de 8€90 en utilisant le code reçu par mail, sms ou notification app. L'offre est valable une fois par client. L'offre n'est ni échangeable, ni remboursable, ni cumulable avec d'autres offres en cours.",
-      "startDate": "2026-11-12",
-      "endDate": "2026-11-13",
-      "code": "",
-      "codeSource": null,
-      "confirmationCount": 0,
-      "discountLabel": "2 € offerts",
-      "minimumOrderLabel": "8,90 €",
-      "cities": [],
-      "scope": "global",
-      "isCurrentlyValid": true,
-      "requiresCode": true
-    }
-  ]
+  "offers": []
 }
